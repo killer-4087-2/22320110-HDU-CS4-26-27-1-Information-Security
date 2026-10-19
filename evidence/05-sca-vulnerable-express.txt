@@ -1,0 +1,61 @@
+﻿# npm audit report
+
+cookie  <0.7.0
+cookie accepts cookie name, path, and domain with out of bounds characters - https://github.com/advisories/GHSA-pxg6-pf52-xh8x
+fix available via `npm audit fix --force`
+Will install express@4.22.3, which is outside the stated dependency range
+node_modules/cookie
+  express  <=5.0.0
+  Depends on vulnerable versions of cookie
+  Depends on vulnerable versions of path-to-regexp
+  Depends on vulnerable versions of proxy-addr
+  Depends on vulnerable versions of qs
+  Depends on vulnerable versions of send
+  Depends on vulnerable versions of serve-static
+  node_modules/express
+
+
+mime  <1.4.1
+Severity: high
+mime Regular Expression Denial of Service when MIME lookup performed on untrusted user input - https://github.com/advisories/GHSA-wrvr-8mpx-r7pp
+fix available via `npm audit fix --force`
+Will install express@4.22.3, which is outside the stated dependency range
+node_modules/mime
+  send  <=0.18.0
+  Depends on vulnerable versions of mime
+  node_modules/send
+    serve-static  <=1.16.0
+    Depends on vulnerable versions of send
+    node_modules/serve-static
+
+path-to-regexp  
+Severity: high
+path-to-regexp outputs backtracking regular expressions - https://github.com/advisories/GHSA-9wv6-86v2-598j
+path-to-regexp contains a ReDoS - https://github.com/advisories/GHSA-rhx6-c78j-4q9w
+path-to-regexp vulnerable to Regular Expression Denial of Service via multiple route parameters - https://github.com/advisories/GHSA-37ch-88jc-xwx2
+fix available via `npm audit fix --force`
+Will install express@4.22.3, which is outside the stated dependency range
+node_modules/path-to-regexp
+
+proxy-addr  1.1.0 - 2.0.7
+Severity: critical
+proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet - https://github.com/advisories/GHSA-jqcg-44mw-7w3h
+fix available via `npm audit fix --force`
+Will install express@4.22.3, which is outside the stated dependency range
+node_modules/proxy-addr
+
+qs  <=6.15.3
+Severity: high
+qs vulnerable to Prototype Pollution - https://github.com/advisories/GHSA-hrpp-h998-j3pp
+qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion - https://github.com/advisories/GHSA-6rw7-vpxm-498p
+qs: Denial of Service via Attacker Controlled isBuffer - https://github.com/advisories/GHSA-4mjr-xmp4-gh2g
+fix available via `npm audit fix --force`
+Will install express@4.22.3, which is outside the stated dependency range
+node_modules/qs
+
+
+
+8 vulnerabilities (2 low, 4 high, 2 critical)
+
+To address all issues, run:
+  npm audit fix --force

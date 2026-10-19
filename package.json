@@ -1,0 +1,28 @@
+{
+  "name": "secure-notes-api",
+  "version": "1.0.0",
+  "description": "Secure REST API with JWT authentication, SQLi/XSS protection and a security CI/CD pipeline. Information Security Lab, Work 1, variant 0.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "seed": "node scripts/seed.js",
+    "test": "node scripts/test.js",
+    "audit": "npm audit --audit-level=low"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "escape-html": "^1.0.3",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^9.39.4",
+    "eslint-plugin-security": "^3.0.1"
+  }
+}

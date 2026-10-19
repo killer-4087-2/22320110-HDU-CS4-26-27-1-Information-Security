@@ -1,0 +1,11 @@
+services:
+  node:
+    build:
+      context: .
+      # The fix is a one-line change: the base image tag in the Dockerfile.
+      # This compose file is otherwise identical to the vulhub original.
+      dockerfile: ../../fixes/Dockerfile.node-8.6.0
+    volumes:
+      - ./www:/usr/src/www
+    ports:
+      - "3000:3000"

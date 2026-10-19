@@ -1,0 +1,23 @@
+# Recommended fix -- current Node.js LTS base image
+#
+# Bumping only to 8.6.0 fixes this CVE but leaves the application on a runtime
+# that has been end-of-life since December 2019 and that carries further known
+# vulnerabilities (npm audit reports 8 advisories against this tree, 2 of them
+# critical). Moving to a supported runtime addresses the whole class rather
+# than the single rule.
+
+FROM node:20-alpine
+
+LABEL maintainer="phithon <root@leavesongs.com>"
+
+COPY package.json package-lock.json /usr/src/
+
+RUN set -ex \
+    && cd /usr/src \
+    && npm ci --omit=dev
+
+WORKDIR /usr/src
+
+USER node
+
+CMD ["npm", "run", "start"]

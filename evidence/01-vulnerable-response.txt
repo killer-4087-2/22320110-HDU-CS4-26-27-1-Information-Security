@@ -1,0 +1,12 @@
+﻿HTTP/1.1 200 OK
+X-Powered-By: Express
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Mon, 19 Oct 2026 03:42:28 GMT
+ETag: W/"39-1a15240e958"
+Content-Type: text/plain; charset=UTF-8
+Content-Length: 57
+Date: Mon, 19 Oct 2026 03:42:47 GMT
+Connection: keep-alive
+
+﻿SECRET_FLAG{this-file-lives-outside-the-static-root}

@@ -1,0 +1,6 @@
+﻿
+D:\killer-4087-2\Work1-SecureAPI\src\security.js
+  78:49  warning  Generic Object Injection Sink  security/detect-object-injection
+
+✖ 1 problem (0 errors, 1 warning)
+
