@@ -163,13 +163,16 @@ table(doc, [
 ], [Cm(3.0), Cm(5.6), Cm(7.0)], size=9, center=(0,))
 
 para(doc, "", sa=4, align=None)
-para(doc, "Deliverable links. The repository and the pipeline run are produced from this "
-          "folder; the two addresses are filled in after the first push, because a public "
-          "remote requires the student's own GitHub account:", sa=4)
-code(doc, [
-    "Repository:  <to be filled after git push>",
-    "Pipeline:    <to be filled after the first Actions run>",
-])
+para(doc, "Deliverables. The project is published as a public repository, and the pipeline "
+          "ran on the first push and completed successfully:", sa=4)
+table(doc, [
+    ("Deliverable", "Location"),
+    ("Repository",
+     "https://github.com/killer-4087-2/22320110-HDU-CS4-26-27-1-Information-Security"),
+    ("Successful pipeline run (run #1)",
+     "https://github.com/killer-4087-2/22320110-HDU-CS4-26-27-1-Information-Security"
+     "/actions/runs/39233093705"),
+], [Cm(4.4), Cm(11.2)], size=8.4, center=(0,))
 
 heading(doc, "2.2 API surface", 2)
 para(doc, "Three endpoints are required by the lab; two more were added because they make the "
