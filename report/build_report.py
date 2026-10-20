@@ -75,6 +75,19 @@ def caption(doc, text):
     set_run(p.add_run(text), size=9, color=GREY)
 
 
+def figure(doc, path, cap, width_cm=15.4):
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_before = Pt(8)
+    p.paragraph_format.space_after = Pt(3)
+    p.paragraph_format.keep_with_next = True
+    p.add_run().add_picture(path, width=Cm(width_cm))
+    c = doc.add_paragraph()
+    c.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    c.paragraph_format.space_after = Pt(12)
+    set_run(c.add_run(cap), size=9, color=GREY)
+
+
 def table(doc, rows, widths, size=9, center=(), header=True):
     t = doc.add_table(rows=len(rows), cols=len(rows[0]))
     t.style = "Table Grid"
@@ -292,6 +305,14 @@ code(doc, [
     "found 0 vulnerabilities",
 ])
 caption(doc, "Terminal transcript: SAST and SCA results. Full JSON reports are in evidence/.")
+
+EV = r"D:\killer-4087-2\Work1-SecureAPI\evidence"
+figure(doc, EV + r"\shot-1-sast-sca.png",
+       "Fig. 1  The three pipeline stages executed locally: 14/14 tests pass, SAST reports "
+       "0 errors and 1 warning, SCA reports 0 vulnerabilities.")
+figure(doc, EV + r"\shot-0-actions.png",
+       "Fig. 2  The same workflow on GitHub Actions: run #1 finished with status Success in "
+       "13 s. The annotation in the lower part is the SAST finding for src/security.js:78.")
 para(doc, "The single SAST warning is security/detect-object-injection in the output encoder. "
           "It is a false positive — the object keys are our own column names, not request data "
           "— and it is suppressed in place with a one-line justification rather than by "
@@ -362,6 +383,9 @@ code(doc, [
     "SECRET_FLAG{this-file-lives-outside-the-static-root}",
 ])
 caption(doc, "Terminal transcript: successful path traversal. secret.txt lives outside www/static.")
+figure(doc, EV + r"\shot-2-exploit.png",
+       "Fig. 3  CVE-2017-14849 reproduced on Node.js 8.5.0. The traversal request returns "
+       "HTTP 200 and the contents of a file stored two levels above the served directory.")
 para(doc, "Two reproduction details matter. curl normalises .. in a URL by default, so without "
           "--path-as-is the payload never leaves the client and the attack appears to fail. And "
           "on Windows the payload shape differs from the Linux PoC in the vulhub README, "
@@ -431,6 +455,9 @@ code(doc, [
     "200",
 ])
 caption(doc, "Terminal transcript: attack blocked, service intact.")
+figure(doc, EV + r"\shot-3-fixed.png",
+       "Fig. 4  Proof of elimination: the identical request against the fixed runtime returns "
+       "HTTP 404, while GET /static/main.js and GET / still return HTTP 200 (regression).")
 para(doc, "A useful cross-check comes from SCA. Running the same dependency audit against the "
           "pinned vulnerable tree reports eight advisories, two of them critical — the "
           "signature of an end-of-life runtime — while the API project reports zero. The "
@@ -523,6 +550,16 @@ para(doc, "The limiting factors of this run are recorded honestly in the README:
           "git were not available, so the vulnerable environment was reproduced natively with "
           "the official Node.js 8.5.0 build, and the repository history has to be created "
           "before submission.")
+
+# --------------------------------------------------------------- appendix
+doc.add_page_break()
+heading(doc, "Appendix A. README.md (verbatim)", 1)
+para(doc, "The submission checklist requires the report to contain the text of README.md from "
+          "the repository. It is reproduced below exactly as committed, without reformatting.",
+     sa=6)
+with open(r"D:\killer-4087-2\Work1-SecureAPI\README.md", encoding="utf-8") as fh:
+    README_LINES = fh.read().rstrip("\n").split("\n")
+code(doc, README_LINES, size=7.0)
 
 doc.save(OUT)
 print("saved:", OUT, os.path.getsize(OUT), "bytes")
