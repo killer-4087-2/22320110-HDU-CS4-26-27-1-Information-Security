@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "backend": "native",
+  "rasterEngine": "pdfium",
+  "source": "saved",
+  "inputPath": "D:\\killer-4087-2\\Work1-SecureAPI\\report\\Work1-Report.pdf",
+  "sourceSha256": "05d6b13cbe9b4daf2ad558e8fef9d1a5dc625683410ae3a542654ecb2c5b49cc",
+  "dpi": 144,
+  "pageCount": 19,
+  "images": [
+    {
+      "index": 1,
+      "page": 5,
+      "path": "D:\\killer-4087-2\\Work1-SecureAPI\\report\\pv\\page-0001.png",
+      "width": 1191,
+      "height": 1684,
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 793.7333333333333,
+        "height": 1122.5333333333333
+      },
+      "byteLength": 342774
+    }
+  ],
+  "missingFonts": []
+}

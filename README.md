@@ -459,18 +459,24 @@ versus `0 vulnerabilities` in the API project itself.
 
 ## Limitations of this run
 
-* **Docker was not installed** on the machine used, so the CVE was reproduced
-  natively with the official Node.js 8.5.0 build rather than in the vulhub
-  container. The exact `docker compose` commands are given above for when
-  Docker is available.
-* **`git` was not installed**, so the repository history was not created here.
-  To publish it:
+* **Two reproduction paths are provided**, and both give the same result.
+  The Docker path is the canonical one and matches the manual:
 
   ```bash
-  git init
-  git add .
-  git commit -m "Work 1: secure API, CI/CD pipeline and CVE-2017-14849 analysis"
-  git branch -M main
-  git remote add origin git@github.com:<user>/<repo>.git
-  git push -u origin main
+  cd cve/CVE-2017-14849
+  docker compose up -d --build                       # node:8.5.0, vulnerable
+  docker compose -f docker-compose.fixed.yml up -d --build   # node:8.6.0, fixed
   ```
+
+  `verify-docker.ps1` runs both in sequence and writes `docker-evidence.txt`.
+  The native path (official Node.js 8.5.0 binary, no container runtime) is kept
+  because it needs nothing installed and was the first method used here.
+
+* **The attack target is mounted, not baked into the image.** `secret.txt` is
+  bind-mounted at `/usr/src/secret.txt` in *both* compose files. If only the
+  vulnerable image contained it, a 404 on the fixed image would prove nothing —
+  the file might simply be missing. Mounting it in both leaves the runtime
+  version as the only variable.
+
+* **The repository history was created after the working tree was complete**,
+  so the commits show the finished state rather than the development process.

