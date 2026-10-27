@@ -176,15 +176,15 @@ table(doc, [
 ], [Cm(3.0), Cm(5.6), Cm(7.0)], size=9, center=(0,))
 
 para(doc, "", sa=4, align=None)
-para(doc, "Deliverables. The project is published as a public repository, and the pipeline "
-          "ran on the first push and completed successfully:", sa=4)
+para(doc, "Deliverables. The project is published as a public repository; the pipeline runs on "
+          "every push and the latest successful run is linked below:", sa=4)
 table(doc, [
     ("Deliverable", "Location"),
     ("Repository",
      "https://github.com/killer-4087-2/22320110-HDU-CS4-26-27-1-Information-Security"),
-    ("Successful pipeline run (run #1)",
+    ("Last successful pipeline run",
      "https://github.com/killer-4087-2/22320110-HDU-CS4-26-27-1-Information-Security"
-     "/actions/runs/39233093705"),
+     "/actions/runs/40445700675"),
 ], [Cm(4.4), Cm(11.2)], size=8.4, center=(0,))
 
 heading(doc, "2.2 API surface", 2)
@@ -311,8 +311,9 @@ figure(doc, EV + r"\shot-1-sast-sca.png",
        "Fig. 1  The three pipeline stages executed locally: 14/14 tests pass, SAST reports "
        "0 errors and 1 warning, SCA reports 0 vulnerabilities.")
 figure(doc, EV + r"\shot-0-actions.png",
-       "Fig. 2  The same workflow on GitHub Actions: run #1 finished with status Success in "
-       "13 s. The annotation in the lower part is the SAST finding for src/security.js:78.")
+       "Fig. 2  An earlier run of the same workflow: run #1 finished with status Success in "
+       "13 s. The annotation in the lower part is the SAST finding for src/security.js:78. The "
+       "latest run is linked in section 2.1.")
 para(doc, "The single SAST warning is security/detect-object-injection in the output encoder. "
           "It is a false positive — the object keys are our own column names, not request data "
           "— and it is suppressed in place with a one-line justification rather than by "
