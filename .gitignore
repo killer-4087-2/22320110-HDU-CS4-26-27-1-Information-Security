@@ -24,4 +24,4 @@ Thumbs.db
 .idea/
 
 # generated preview images for the report builder
-report/pv/
+report/pv*/
