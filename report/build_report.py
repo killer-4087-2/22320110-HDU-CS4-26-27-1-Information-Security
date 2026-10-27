@@ -161,6 +161,43 @@ para(doc, "The purpose of this work is to go through the full security lifecycle
           "four skills — build, check, break, repair — are what a security engineer does on a "
           "daily basis, and the last two are the ones normally skipped by students.")
 
+heading(doc, "1.1 Where each requirement is answered", 2)
+para(doc, "The assignment is a checklist, so this table maps every item to the place where it is "
+          "answered — in this report, in the repository, or both.", sa=4)
+table(doc, [
+    ("Requirement (manual)", "Where it is answered"),
+    ("1. Stack, project, git repository linked to a remote",
+     "§2.1; repository URL in §2.1 and in the README"),
+    ("2. Functional API — POST /auth/login, GET /api/data, one endpoint of your own",
+     "§2.2 (three required plus two extra), tested by 14 automated checks"),
+    ("2. Data storage (SQLite or similar)", "§2.1 — SQLite through the built-in node:sqlite"),
+    ("3. SQLi protection — prepared statements, no concatenation",
+     "§3.1 with the statement from src/db.js"),
+    ("3. XSS protection — escape all user data returned in responses",
+     "§3.2 with the encoder from src/security.js"),
+    ("3. Broken authentication — JWT issuance, verification middleware, bcrypt",
+     "§3.3, covering issuing, verification, hashing, timing and lockout"),
+    ("4. CI/CD file in .github/workflows, SAST and SCA on every push",
+     "§4 with the workflow file and the stage table"),
+    ("5. Test the API with curl; screenshots of SAST/SCA results",
+     "§2.2 (curl examples) and §4, Fig. 1 and Fig. 2 taken from the Actions section"),
+    ("6–7. Vulnerable environment from Vulhub, Docker, service started",
+     "§5.3 — docker compose build/up, verified inside the container"),
+    ("8. Reproduce the attack, record every command and request",
+     "§5.3, plus evidence/ transcripts"),
+    ("9. Root cause analysis in your own words", "§5.4 — the normalize() logic error"),
+    ("10. Fix, rebuild, verify the attack no longer works, regression test",
+     "§5.5 (fix) and §5.6 (verification and regression)"),
+    ("Submission 1 — public repository link", "§2.1"),
+    ("Submission 2 — README text with all eight items",
+     "Appendix A reproduces README.md verbatim"),
+    ("Submission 3 — link to the last successful pipeline run", "§2.1"),
+    ("Submission 4 — folder with the changed files",
+     "fixes/ (Dockerfiles, compose file, notes) and cve/CVE-2017-14849/Dockerfile.fixed"),
+    ("Title page — work number and title, variant, name, HDU number",
+     "Title page"),
+], [Cm(8.4), Cm(7.2)], size=8.4)
+
 # ------------------------------------------------------------------ 2
 heading(doc, "2. Delivered Project", 1)
 
@@ -294,6 +331,16 @@ table(doc, [
     ("SCA", "npm audit", "build fails on high/critical in production dependencies"),
     ("Reports", "JSON artifacts", "uploaded for review"),
 ], [Cm(2.6), Cm(6.4), Cm(6.6)], size=9, center=(0,))
+para(doc, "**On the choice of scanners.** The manual suggests `npm audit` or `snyk test` for "
+          "JavaScript under SAST, and OWASP Dependency-Check or Snyk under SCA. The split is "
+          "slightly unusual, because `npm audit` is a composition analysis tool: it compares the "
+          "installed dependency tree against advisory data and never reads the project's own "
+          "code. This repository therefore uses **ESLint with eslint-plugin-security for SAST** — "
+          "it inspects our source, which is what static analysis means — and **npm audit for "
+          "SCA**, which queries the npm advisory database, the same corpus that Dependency-Check "
+          "consults for JavaScript packages. Both are free, need no account or API key, and run "
+          "in the pipeline on every push, which satisfies the grading criterion of at least one "
+          "SAST/SCA tool running in CI.", sb=6)
 
 para(doc, "", sa=4, align=None)
 para(doc, "Current state of both scanners on this codebase:", sa=4)
@@ -378,6 +425,11 @@ code(doc, [
     "SECRET_FLAG{this-file-lives-outside-the-static-root}",
 ])
 caption(doc, "Terminal transcript: the traversal succeeds inside the container running Node 8.5.0.")
+para(doc, "Both runs were executed by `cve/CVE-2017-14849/verify-docker.ps1`, which builds each "
+          "image, waits until the application actually answers HTTP 200, issues the requests and "
+          "writes the whole session to `cve/CVE-2017-14849/docker-evidence.txt` in the repository. "
+          "That transcript is the raw evidence; the figures below show the same requests against "
+          "the same application on the native runtime, where a window capture was possible.", sb=4)
 para(doc, "The same request against the fixed image, built from the same application and the same "
           "mounted files:", sb=4)
 code(doc, [
