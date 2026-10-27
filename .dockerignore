@@ -1,0 +1,12 @@
+node_modules
+data
+.git
+.gitignore
+.github
+report
+evidence
+cve
+fixes
+tools
+*.md
+start-api.cmd
